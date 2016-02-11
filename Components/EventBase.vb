@@ -17,6 +17,7 @@
 ' CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 ' DEALINGS IN THE SOFTWARE.
 '
+Imports System.Collections.Generic
 Imports DotNetNuke.Security
 Imports System.Globalization
 Imports DotNetNuke.Services.FileSystem
@@ -133,7 +134,7 @@ Namespace DotNetNuke.Modules.Events
                 Dim socialGroupID As Integer = GetUrlGroupId()
                 If socialGroupID > -1 Then
                     Dim objRoleCtl As New RoleController
-                    Dim objRoleInfo As RoleInfo = objRoleCtl.GetRole(socialGroupID, PortalSettings.PortalId)
+                    Dim objRoleInfo As RoleInfo = objRoleCtl.GetRoleById(PortalSettings.PortalId, socialGroupID)
                     If Not objRoleInfo Is Nothing Then
                         If Not PortalSettings.UserInfo.IsInRole(objRoleInfo.RoleName) Then
                             Return False
@@ -256,7 +257,7 @@ Namespace DotNetNuke.Modules.Events
                     If objModulePermission.UserID < 0 Then
                         Dim objCtlRole As New RoleController
                         If objModulePermission.RoleID <> PortalSettings.AdministratorRoleId Then
-                            Dim lstUsers As ArrayList = objCtlRole.GetUsersByRoleName(PortalId, objModulePermission.RoleName)
+                            Dim lstUsers As IList(Of UserInfo) = RoleController.Instance.GetUsersByRole(PortalId, objModulePermission.RoleName)
                             Dim objUser As UserInfo
                             For Each objUser In lstUsers
                                 If Not moderators.Contains(objUser) Then
@@ -495,9 +496,9 @@ Namespace DotNetNuke.Modules.Events
 
         Public Sub EventEmailAddRoleUsers(ByVal roleId As Integer, ByVal objEventEmailInfo As EventEmailInfo)
             Dim objRoleController As New RoleController
-            Dim objRole As RoleInfo = objRoleController.GetRole(roleId, PortalId)
+            Dim objRole As RoleInfo = objRoleController.GetRoleById(PortalId, roleId)
             If Not objRole Is Nothing Then
-                Dim lstUsers As ArrayList = objRoleController.GetUsersByRoleName(PortalId, objRole.RoleName)
+                Dim lstUsers As IList(Of UserInfo) = RoleController.Instance.GetUsersByRole(PortalId, objRole.RoleName)
                 For Each objUser As UserInfo In lstUsers
                     objEventEmailInfo.UserEmails.Add(objUser.Email)
                     objEventEmailInfo.UserLocales.Add(objUser.Profile.PreferredLocale)

@@ -28,6 +28,7 @@ Imports DotNetNuke.Security.Roles
 Imports DotNetNuke.Modules.Events.Components.Integration
 Imports System.Globalization
 Imports System.Collections
+Imports System.Collections.Generic
 
 
 Namespace DotNetNuke.Modules.Events
@@ -441,7 +442,7 @@ Namespace DotNetNuke.Modules.Events
                 If Not PortalSecurity.IsInRole(PortalSettings.AdministratorRoleName.ToString) Then
                     Dim objCtlModule As New ModuleController
 
-                    Dim objModules As ArrayList = objCtlModule.GetModuleTabs(subModuleID)
+                    Dim objModules As IList(Of ModuleInfo) = objCtlModule.GetTabModulesByModule(subModuleID)
                     Dim objModule As ModuleInfo
                     For Each objModule In objModules
                         If Not objModule.InheritViewPermissions Then
@@ -482,7 +483,7 @@ Namespace DotNetNuke.Modules.Events
                 Return False
             Else
                 Dim objRoleCtl As New RoleController
-                Dim objRoleInfo As RoleInfo = objRoleCtl.GetRole(socialGroupId, PortalSettings.PortalId)
+                Dim objRoleInfo As RoleInfo = objRoleCtl.GetRoleById(PortalSettings.PortalId, socialGroupId)
                 If objRoleInfo Is Nothing Then
                     Return False
                 End If
@@ -536,7 +537,7 @@ Namespace DotNetNuke.Modules.Events
                             Else
                                 roleName = objModulePermission.RoleName
                             End If
-                            Dim lstRoleUsers As ArrayList = objCtlRole.GetUsersByRoleName(BasePortalID, roleName)
+                            Dim lstRoleUsers As IList(Of UserInfo) = RoleController.Instance.GetUsersByRole(BasePortalID, roleName)
                             For Each objUser As UserInfo In lstRoleUsers
                                 AddViewUserid(objUser.UserID, objModulePermission.AllowAccess, lstUsers, lstDeniedUsers)
                             Next
@@ -1472,7 +1473,7 @@ Namespace DotNetNuke.Modules.Events
             Dim moduleTitle As String = CType(Common.Utilities.DataCache.GetCache(cacheKey), String)
             If moduleTitle Is Nothing Then
                 Dim objModuleController As New ModuleController
-                Dim objModuleTabs As ArrayList = objModuleController.GetModuleTabs(intModuleID)
+                Dim objModuleTabs As IList(Of ModuleInfo) = objModuleController.GetTabModulesByModule(intModuleID)
                 Dim objModuleInfo As ModuleInfo
                 Dim intTabID As Integer = 0
                 For Each objModuleInfo In objModuleTabs
@@ -1588,7 +1589,7 @@ Namespace DotNetNuke.Modules.Events
                 If roleID <> -1 Then
                     Dim enrollRoleInfo As RoleInfo
                     Dim enrollRoleCntrl As New RoleController
-                    enrollRoleInfo = enrollRoleCntrl.GetRole(roleID, portalId)
+                    enrollRoleInfo = enrollRoleCntrl.GetRoleById(portalId, roleID)
                     roleName = enrollRoleInfo.RoleName
                     Return PortalSecurity.IsInRole(roleName)
                 End If

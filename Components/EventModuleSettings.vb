@@ -247,7 +247,10 @@ Namespace DotNetNuke.Modules.Events
         Public Sub New(ByVal moduleId As Integer, ByVal localResourceFile As String)
             _moduleID = moduleId
             Dim mc As New ModuleController
-            _allsettings = mc.GetModuleSettings(_moduleID)
+
+            Dim _module As ModuleInfo = ModuleController.Instance.GetModule(_moduleID, Null.NullInteger, false)
+
+            _allsettings = _module.ModuleSettings
             _localresourcefile = localResourceFile
 
             ' Set default correct for those where the basic default is affected by upgrade

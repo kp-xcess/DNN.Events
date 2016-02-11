@@ -299,7 +299,7 @@ Namespace DotNetNuke.Modules.Events
                 'groupnamelabel
                 'groupname
                 Dim roleController As New RoleController
-                Dim rolename As String = roleController.GetRole(eventInfo.SocialGroupId, eventInfo.PortalID).RoleName
+                Dim rolename As String = roleController.GetRoleById(eventInfo.PortalID, eventInfo.SocialGroupId).RoleName
                 dict.Add("socialgrouprolenamelabel", Localization.GetString("TokenSocialGroupRoleNameLabel", LocalResourceFile))
                 dict.Add("socialgrouprolename", rolename)
                 dict.Add("socialgrouproleid", eventInfo.SocialGroupId.ToString)
@@ -535,7 +535,7 @@ Namespace DotNetNuke.Modules.Events
                         i += 1
                     Next
                 End If
-                For Each role In roleController.GetPortalRoles(eventInfo.PortalID)
+                For Each role In roleController.GetRoles(eventInfo.PortalID)
                     sourceText = TokenOneParameter(sourceText, "HASROLE_" + role.RoleName, userRoles.Contains(role.RoleName))
                     sourceText = TokenOneParameter(sourceText, "HASNOTROLE_" + role.RoleName, Not userRoles.Contains(role.RoleName))
                 Next

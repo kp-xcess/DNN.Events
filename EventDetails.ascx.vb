@@ -28,6 +28,7 @@ Imports System.Xml.XPath
 Imports System.Xml.Xsl
 Imports System.IO
 Imports System.Windows.Forms
+Imports DotNetNuke.Entities.Modules
 Imports DotNetNuke.Services.Tokens
 Imports DotNetNuke.Entities.Profile
 
@@ -159,9 +160,9 @@ Namespace DotNetNuke.Modules.Events
                 ' So we have a valid item, but is it from a module that has been deleted
                 ' but not removed from the recycle bin
                 If _eventInfo.ModuleID <> ModuleId Then
-                    Dim objCtlModule As New Entities.Modules.ModuleController
-                    Dim objModules As ArrayList = objCtlModule.GetModuleTabs(_eventInfo.ModuleID)
-                    Dim objModule As Entities.Modules.ModuleInfo
+                    Dim objCtlModule As New ModuleController
+                    Dim objModules As IList(Of ModuleInfo) = objCtlModule.GetTabModulesByModule(_eventInfo.ModuleID)
+                    Dim objModule As ModuleInfo
                     Dim isDeleted As Boolean = True
                     For Each objModule In objModules
                         If Not objModule.IsDeleted Then
